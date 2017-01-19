@@ -59,6 +59,9 @@ def cluster_acc(Y_pred, Y):
     return sum([w[i,j] for i,j in ind])*1.0/Y_pred.size, w
 
 def DisKmeans(db, update_interval = None):
+    """
+    Training pipeline after autoencoding
+    """
     from sklearn.cluster import KMeans
     from sklearn.mixture import GMM
     from sklearn.lda import LDA
@@ -157,6 +160,50 @@ def DisKmeans(db, update_interval = None):
 
         iters += 1
         seek = (seek + train_batch_size*update_interval)%N
+
+"""
+DB functions
+"""
+def read_db(str_db, float_data = True):
+    db = leveldb.LevelDB(str_db)
+    datum = caffe_pb2.Datum()
+    array = []
+    label = []
+    for k,v in db.RangeIter():
+        dt = datum.FromString(v)
+        if float_data:
+          array.append(dt.float_data)
+        else:
+          array.append(np.fromstring(dt.data, dtype=np.uint8))
+        label.append(dt.label)
+    return np.asarray(array), np.asarray(label)
+
+def write_db(X, Y, fname):
+    if os.path.exists(fname):
+      shutil.rmtree(fname)
+    assert X.shape[0] == Y.shape[0]
+    X = X.reshape((X.shape[0], X.size/X.shape[0], 1, 1))
+    db = leveldb.LevelDB(fname)
+
+    for i in xrange(X.shape[0]):
+      x = X[i]
+      if x.ndim != 3:
+        x = x.reshape((x.size,1,1))
+      db.Put('{:08}'.format(i), caffe.io.array_to_datum(x, int(Y[i])).SerializeToString())
+    del db
+
+def update_db(seek, N, X, Y, fname):
+    assert X.shape[0] == Y.shape[0]
+    X = X.reshape((X.shape[0], X.size/X.shape[0], 1, 1))
+    db = leveldb.LevelDB(fname)
+
+    for i in xrange(X.shape[0]):
+      x = X[i]
+      if x.ndim != 3:
+        x = x.reshape((x.size,1,1))
+      db.Put('{:08}'.format((i+seek)%N), caffe.io.array_to_datum(x, int(Y[i])).SerializeToString())
+    del db
+
 
 def make_net(fnet, layers):
     layer_dict = {}
