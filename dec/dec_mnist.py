@@ -204,6 +204,29 @@ def update_db(seek, N, X, Y, fname):
       db.Put('{:08}'.format((i+seek)%N), caffe.io.array_to_datum(x, int(Y[i])).SerializeToString())
     del db
 
+"""
+Caffe network functions
+"""
+def write_net(db, dim, n_class, seek):
+    layers = [ ('data_seek', ('data','dummy',db+'_total', db+'_total', 1.0, seek)),
+             ('data_seek', ('label', 'dummy', 'train_weight', 'train_weight', 1.0, seek)),
+
+             ('inner', ('inner1', 'data', 500)),
+             ('relu', ('inner1',)),
+
+             ('inner', ('inner2', 'inner1', 500)),
+             ('relu', ('inner2',)),
+
+             ('inner', ('inner3', 'inner2', 2000)),
+             ('relu', ('inner3',)),
+
+             ('inner', ('output', 'inner3', dim)),
+
+             ('tloss', ('loss', 'output', 'label', n_class))
+          ]
+    with open('net.prototxt', 'w') as fnet:
+        make_net(fnet, layers)
+
 
 def make_net(fnet, layers):
     layer_dict = {}
