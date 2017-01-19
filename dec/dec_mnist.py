@@ -207,6 +207,31 @@ def update_db(seek, N, X, Y, fname):
 """
 Caffe network functions
 """
+def extract_feature(net, model, blobs, N, train = False, device = None):
+    if type(net) is str:
+        if train:
+            caffe.Net.set_phase_train()
+        if model:
+            net = caffe.Net(net, model)
+        else:
+            net = caffe.Net(net)
+        caffe.Net.set_phase_test()
+    if not (device is None):
+        caffe.Net.set_mode_gpu()
+        caffe.Net.set_device(device)
+
+    batch_size = net.blobs[blobs[0]].num
+    res = [ [] for i in blobs ]
+    for i in xrange((N-1)/batch_size+1):
+        ret = net.forward(blobs=blobs)
+        for i in xrange(len(blobs)):
+            res[i].append(ret[blobs[i]].copy())
+
+    for i in xrange(len(blobs)):
+        res[i] = np.concatenate(res[i], axis=0)[:N]
+
+    return res, net
+
 def write_net(db, dim, n_class, seek):
     layers = [ ('data_seek', ('data','dummy',db+'_total', db+'_total', 1.0, seek)),
              ('data_seek', ('label', 'dummy', 'train_weight', 'train_weight', 1.0, seek)),
