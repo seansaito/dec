@@ -93,6 +93,7 @@ def DisKmeans(db, update_interval = None):
     acc_list = []
 
     while True:
+        print "Cluster optimization iteration", iters
         write_net(db, dim, N_class, "'{:08}'".format(0))
         if iters == 0:
             write_db(np.zeros((N,N_class)), np.zeros((N,)), 'train_weight')
