@@ -178,7 +178,7 @@ def DisKmeans(db, update_interval = None):
             """%(update_interval*100))
 
         os.system('caffe train --solver=solver.prototxt --weights=init.caffemodel')
-        shutil.copyfile('exp/test/save_iter_16000.caffemodel', 'init.caffemodel')
+        shutil.copyfile('exp/mnist/save_iter_16000.caffemodel', 'init.caffemodel')
 
         os.system('caffe train --solver=reconst_solver.prototxt --weights=init.caffemodel')
         shutil.copyfile('exp/test/save_iter_%d.caffemodel'%update_interval, 'init.caffemodel')
