@@ -177,6 +177,8 @@ def DisKmeans(db, update_interval = None):
                 device_id: 0
             """)
 
+        # TODO graph the errors
+
         os.system('caffe train --solver=reconst_solver.prototxt --weights=init.caffemodel')
         shutil.copyfile('exp/mnist/save_iter_500.caffemodel', 'init.caffemodel')
 
