@@ -52,11 +52,11 @@ def main(db, params):
 
                 ])
         last_dim = dim
-    with open('pt_net.prototxt', 'w') as fnet:
+    with open('cifar_pt_net.prototxt', 'w') as fnet:
         dec.make_net(fnet, encoder_layers+decoder_layers[::-1])
 
-    with open('ft_solver.prototxt', 'w') as fsolver:
-        fsolver.write("""net: "pt_net.prototxt"
+    with open('cifar_ft_solver.prototxt', 'w') as fsolver:
+        fsolver.write("""net: "cifar_pt_net.prototxt"
 base_lr: {0}
 lr_policy: "step"
 gamma: 0.1
@@ -118,11 +118,11 @@ def pretrain_main(db, params):
         else:
             layers.append(('euclid', ('pt_loss%d'%(i+1), 'd_'+str_x, str_x)))
 
-        with open('stack_net.prototxt', 'w') as fnet:
+        with open('cifar_stack_net.prototxt', 'w') as fnet:
             dec.make_net(fnet, layers)
 
-        with open('pt_solver.prototxt', 'w') as fsolver:
-            fsolver.write("""net: "stack_net.prototxt"
+        with open('cifar_pt_solver.prototxt', 'w') as fsolver:
+            fsolver.write("""net: "cifar_stack_net.prototxt"
                 base_lr: {0}
                 lr_policy: "step"
                 gamma: 0.1
@@ -142,24 +142,24 @@ def pretrain_main(db, params):
                 device_id: 0""".format(rate, params['step'][0], params['pt_iter'][0], params['decay'][0], db))
 
         if i > 0:
-            model = 'exp/'+db+'/save_iter_%d.caffemodel'%params['pt_iter'][0]
+            model = 'exp/'+db+'/cifar_save_iter_%d.caffemodel'%params['pt_iter'][0]
         else:
             model = None
 
-        mean, net = dec.extract_feature('stack_net.prototxt', model,
+        mean, net = dec.extract_feature('cifar_stack_net.prototxt', model,
                                         [str_x], 1, train=True, device=0)
 
-        net.save('stack_init.caffemodel')
+        net.save('cifar_stack_init.caffemodel')
 
-        os.system('caffe train --solver=pt_solver.prototxt --weights=stack_init.caffemodel')
+        os.system('caffe train --solver=cifar_pt_solver.prototxt --weights=cifar_stack_init.caffemodel')
 
 
-        net = caffe.Net('stack_net.prototxt', 'exp/'+db+'/save_iter_%d.caffemodel'%params['pt_iter'][0])
+        net = caffe.Net('cifar_stack_net.prototxt', 'exp/'+db+'/cifar_save_iter_%d.caffemodel'%params['pt_iter'][0])
         w_down.append(net.params['d_'+str_x][0].data.copy())
         b_down.append(net.params['d_'+str_x][1].data.copy())
         del net
 
-    net = caffe.Net('pt_net.prototxt', 'exp/'+db+'/save_iter_%d.caffemodel'%params['pt_iter'][0])
+    net = caffe.Net('cifar_pt_net.prototxt', 'exp/'+db+'/cifar_save_iter_%d.caffemodel'%params['pt_iter'][0])
     for i in xrange(n_layer):
         if i == 0:
             k = 'd_data'
@@ -167,18 +167,16 @@ def pretrain_main(db, params):
             k = 'd_inner%d'%i
         net.params[k][0].data[...] = w_down[i]
         net.params[k][1].data[...] = b_down[i]
-    net.save('stack_init_final.caffemodel')
-
-
+    net.save('cifar_stack_init_final.caffemodel')
 
 
 
 if __name__ == '__main__':
-    db = 'mnist'
-    input_dim = 784
+    db = 'cifar'
+    input_dim = 3072
     #dec.make_mnist_data()
     print main(db, {'n_layer':[4], 'dim': [input_dim, 500, 500, 2000, 10],
                'drop': [0.0], 'rate': [0.1], 'step': [20000], 'iter':[100000], 'decay': [0.0000]})
     print pretrain_main(db, {'dim': [input_dim, 500, 500, 2000, 10], 'pt_iter': [50000],
               'drop': [0.2], 'rate': [0.1], 'step': [20000], 'iter':[100000], 'decay': [0.0000]})
-    os.system("caffe train --solver=ft_solver.prototxt --weights=stack_init_final.caffemodel")
+    os.system("caffe train --solver=cifar_ft_solver.prototxt --weights=cifar_stack_init_final.caffemodel")
