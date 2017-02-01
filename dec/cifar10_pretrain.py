@@ -172,7 +172,7 @@ def pretrain_main(db, params):
 
 
 if __name__ == '__main__':
-    db = 'cifar'
+    db = 'cifar10'
     input_dim = 3072
     #dec.make_mnist_data()
     print main(db, {'n_layer':[4], 'dim': [input_dim, 500, 500, 2000, 10],
