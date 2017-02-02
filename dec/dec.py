@@ -407,9 +407,9 @@ def make_cifar10_data():
 
     write_db(X_train, y_train, 'cifar10_train')
 
-    X_, Y_ = read_db('cifar10_train', True)
-    assert np.abs((X_train - X_)).mean() < 1e-5
-    assert (y_train != Y_).sum() == 0
+    # X_, Y_ = read_db('cifar10_train', True)
+    # assert np.abs((X_train - X_)).mean() < 1e-5
+    # assert (y_train != Y_).sum() == 0
 
     write_db(X_test, y_test, 'cifar10_test')
 
