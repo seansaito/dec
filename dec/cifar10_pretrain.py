@@ -152,12 +152,12 @@ def pretrain_main(db, params):
         os.system('caffe train --solver=cifar_pt_solver.prototxt --weights=cifar_stack_init.caffemodel')
 
 
-        net = caffe.Net('cifar_stack_net.prototxt', 'exp/'+db+'/cifar_save_iter_%d.caffemodel'%params['pt_iter'][0])
+        net = caffe.Net('cifar_stack_net.prototxt', 'exp/'+db+'/save_iter_%d.caffemodel'%params['pt_iter'][0])
         w_down.append(net.params['d_'+str_x][0].data.copy())
         b_down.append(net.params['d_'+str_x][1].data.copy())
         del net
 
-    net = caffe.Net('cifar_pt_net.prototxt', 'exp/'+db+'/cifar_save_iter_%d.caffemodel'%params['pt_iter'][0])
+    net = caffe.Net('cifar_pt_net.prototxt', 'exp/'+db+'/save_iter_%d.caffemodel'%params['pt_iter'][0])
     for i in xrange(n_layer):
         if i == 0:
             k = 'd_data'
