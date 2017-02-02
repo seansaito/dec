@@ -76,7 +76,7 @@ def DisKmeans(db, update_interval = None):
         N_class = 10
         batch_size = 100
         train_batch_size = 256
-        X, Y = read_db(db+'_train', True)
+        X, Y = read_db(db+'_total', True)
         X = np.asarray(X, dtype=np.float64)
         Y = np.asarray(np.squeeze(Y), dtype = np.int32)
         N = X.shape[0]
@@ -265,7 +265,7 @@ def extract_feature(net, model, blobs, N, train = False, device = None):
     return res, net
 
 def write_net(db, dim, n_class, seek):
-    layers = [ ('data_seek', ('data','dummy',db+'_train', db+'_train', 1.0, seek)),
+    layers = [ ('data_seek', ('data','dummy',db+'_total', db+'_total', 1.0, seek)),
              ('data_seek', ('label', 'dummy', 'train_weight', 'train_weight', 1.0, seek)),
 
              ('inner', ('inner1', 'data', 500)),
@@ -296,7 +296,7 @@ def make_net(fnet, layers):
         top: "{0}"
         data_param {{
             source: "{2}"
-            backend: LMDB
+            backend: LEVELDB
             batch_size: 256
         }}
         transform_param {{
@@ -310,7 +310,7 @@ def make_net(fnet, layers):
         top: "{0}"
         data_param {{
             source: "{3}"
-            backend: LMDB
+            backend: LEVELDB
             batch_size: 100
         }}
         transform_param {{

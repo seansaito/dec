@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 import cPickle
 import time
+from keras.datasets import cifar10
 
 def vis_square(fname, data, padsize=1, padval=0):
     data -= data.min()
@@ -386,6 +387,35 @@ def make_mnist_data():
   X3 = np.concatenate((X,X2), axis=0)
   Y3 = np.concatenate((Y,Y2), axis=0)
   write_db(X3,Y3, 'mnist_total')
+
+def make_cifar10_data():
+    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
+    X_train = np.array([row.ravel() for row in X_train])
+    X_test = np.array([row.ravel() for row in X_test])
+    X_train = X_train / 255.
+    X_test = X_test / 255.
+    mean_img = np.mean(X_train, axis=0)
+    X_train = X_train - mean_img
+    X_test = X_test - mean_img
+    y_train = y_train.ravel()
+    y_test = y_test.ravel()
+
+    # Add axes
+    X_train = np.array([row[:, np.newaxis, np.newaxis] for row in X_train])
+    X_test = np.array([row[:, np.newaxis, np.newaxis] for row in X_test])
+
+    write_db(X_train, y_train, 'cifar10_train')
+
+    X_, Y_ = read_db('cifar10_train', True)
+    assert np.abs((X_train - X_)).mean() < 1e-5
+    assert (y_train != Y_).sum() == 0
+
+    write_db(X_test, y_test, 'cifar10_test')
+
+    X3 = np.concatenate((X_train, X_test), axis=0)
+    Y3 = np.concatenate((y_train, y_test), axis=0)
+    write_db(X3,Y3, 'cifar10_total')
 
 def make_reuters_data():
   np.random.seed(1234)
