@@ -152,7 +152,7 @@ def DisKmeans(db, update_interval = None):
                 momentum: 0.9
                 weight_decay: 0.0000
                 snapshot: 100
-                snapshot_prefix: "exp/test/save"
+                snapshot_prefix: "exp/cifar10_test/save"
                 snapshot_after_train:true
                 solver_mode: GPU
                 debug_info: false
@@ -160,7 +160,7 @@ def DisKmeans(db, update_interval = None):
                 device_id: 0"""%update_interval)
 
         os.system('caffe train --solver=cifar10_solver.prototxt --weights=cifar10_init.caffemodel')
-        shutil.copyfile('exp/test/save_iter_%d.caffemodel'%update_interval, 'cifar10_init.caffemodel')
+        shutil.copyfile('exp/cifar10_test/save_iter_%d.caffemodel'%update_interval, 'cifar10_init.caffemodel')
 
         iters += 1
         seek = (seek + train_batch_size*update_interval)%N
