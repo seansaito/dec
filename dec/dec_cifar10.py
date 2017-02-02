@@ -158,30 +158,6 @@ def DisKmeans(db, update_interval = None):
                 sample_print: false
                 device_id: 0"""%update_interval)
 
-        with open("reconst_solver.prototxt", "w") as const_solver:
-            const_solver.write("""net: "pt_net.prototxt",
-                base_lr: 0.1
-                lr_policy: "step"
-                gamma: 0.1
-                stepsize: 20000
-                display: 100
-                max_iter: 500
-                momentum: 0.9
-                momentum_burnin: 1000
-                weight_decay: 0.0
-                snapshot: 15000
-                snapshot_prefix: "exp/mnist/save"
-                snapshot_after_train:true
-                solver_mode: GPU
-                debug_info: false
-                device_id: 0
-            """)
-
-        # TODO graph the errors
-
-        os.system('caffe train --solver=reconst_solver.prototxt --weights=init.caffemodel')
-        shutil.copyfile('exp/mnist/save_iter_500.caffemodel', 'init.caffemodel')
-
         os.system('caffe train --solver=solver.prototxt --weights=init.caffemodel')
         shutil.copyfile('exp/test/save_iter_%d.caffemodel'%update_interval, 'init.caffemodel')
 
