@@ -475,7 +475,7 @@ def make_net(fnet, layers):
     """
     layer_dict['euclid'] = """layers {{
       name: "{0}"
-      type: SIGMOIDCROSSENTROPYLOSS
+      type: EUCLIDEAN_LOSS
       bottom: "{1}"
       bottom: "{2}"
       top: "{0}"

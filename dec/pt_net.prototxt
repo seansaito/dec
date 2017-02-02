@@ -37,7 +37,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 500 
+    num_output: 500
     weight_filler {
       type: "gaussian"
       std: 0.0357142857143
@@ -73,7 +73,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 500 
+    num_output: 500
     weight_filler {
       type: "gaussian"
       std: 0.04472135955
@@ -109,7 +109,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 2000 
+    num_output: 2000
     weight_filler {
       type: "gaussian"
       std: 0.04472135955
@@ -145,7 +145,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 10 
+    num_output: 10
     weight_filler {
       type: "gaussian"
       std: 0.022360679775
@@ -175,7 +175,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 2000 
+    num_output: 2000
     weight_filler {
       type: "gaussian"
       std: 0.316227766017
@@ -211,7 +211,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 500 
+    num_output: 500
     weight_filler {
       type: "gaussian"
       std: 0.022360679775
@@ -247,7 +247,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 500 
+    num_output: 500
     weight_filler {
       type: "gaussian"
       std: 0.04472135955
@@ -283,7 +283,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 784 
+    num_output: 784
     weight_filler {
       type: "gaussian"
       std: 0.04472135955
@@ -296,7 +296,7 @@ layers {
 }
 layers {
   name: "pt_loss"
-  type: EUCLIDEAN_LOSS
+  type: SIGMOIDCROSSENTROPYLOSS
   bottom: "d_data"
   bottom: "data"
   top: "pt_loss"
