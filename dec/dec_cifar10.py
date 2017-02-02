@@ -80,7 +80,7 @@ def DisKmeans(db, update_interval = None):
         X = np.asarray(X, dtype=np.float64)
         Y = np.asarray(np.squeeze(Y), dtype = np.int32)
         N = X.shape[0]
-        img = np.clip((X/0.02), 0, 255).astype(np.uint8).reshape((N, 28, 28, 1))
+        # img = np.clip((X/0.02), 0, 255).astype(np.uint8).reshape((N, 28, 28, 1))
 
     tmm_alpha = 1.0
     total_iters = (N-1)/train_batch_size+1
