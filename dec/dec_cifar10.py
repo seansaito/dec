@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 import cPickle
 import time
+import lmdb
 
 class TMM(object):
     """
@@ -75,7 +76,7 @@ def DisKmeans(db, update_interval = None):
         N_class = 10
         batch_size = 100
         train_batch_size = 256
-        X, Y = read_db(db+'_total', True)
+        X, Y = read_db(db+'_train', True)
         X = np.asarray(X, dtype=np.float64)
         Y = np.asarray(np.squeeze(Y), dtype = np.int32)
         N = X.shape[0]
@@ -97,7 +98,7 @@ def DisKmeans(db, update_interval = None):
         write_net(db, dim, N_class, "'{:08}'".format(0))
         if iters == 0:
             write_db(np.zeros((N,N_class)), np.zeros((N,)), 'train_weight')
-            ret, net = extract_feature('net.prototxt',
+            ret, net = extract_feature('cifar10_net.prototxt',
                         'exp/'+db+'/save_iter_100000.caffemodel', ['output'], N, True, 0)
             feature = ret[0].squeeze()
 
@@ -106,7 +107,7 @@ def DisKmeans(db, update_interval = None):
             net.params['loss'][0].data[0,0,:,:] = gmm_model.cluster_centers_.T
             net.params['loss'][1].data[0,0,:,:] = 1.0/gmm_model.covars_.T
         else:
-            ret, net = extract_feature('net.prototxt', 'init.caffemodel', ['output'], N, True, 0)
+            ret, net = extract_feature('cifar10_net.prototxt', 'cifar10_init.caffemodel', ['output'], N, True, 0)
             feature = ret[0].squeeze()
 
             gmm_model.cluster_centers_ = net.params['loss'][0].data[0,0,:,:].T
@@ -137,11 +138,11 @@ def DisKmeans(db, update_interval = None):
         print weight[:10,:]
         write_db(weight, np.zeros((weight.shape[0],)), 'train_weight')
 
-        net.save('init.caffemodel')
+        net.save('cifar10_init.caffemodel')
         del net
 
-        with open('solver.prototxt', 'w') as fsolver:
-            fsolver.write("""net: "net.prototxt"
+        with open('cifar10_solver.prototxt', 'w') as fsolver:
+            fsolver.write("""net: "cifar10_net.prototxt"
                 base_lr: 0.01
                 lr_policy: "step"
                 gamma: 0.1
@@ -158,8 +159,8 @@ def DisKmeans(db, update_interval = None):
                 sample_print: false
                 device_id: 0"""%update_interval)
 
-        os.system('caffe train --solver=solver.prototxt --weights=init.caffemodel')
-        shutil.copyfile('exp/test/save_iter_%d.caffemodel'%update_interval, 'init.caffemodel')
+        os.system('caffe train --solver=cifar10_solver.prototxt --weights=cifar10_init.caffemodel')
+        shutil.copyfile('exp/test/save_iter_%d.caffemodel'%update_interval, 'cifar10_init.caffemodel')
 
         iters += 1
         seek = (seek + train_batch_size*update_interval)%N
@@ -194,6 +195,34 @@ def write_db(X, Y, fname):
             x = x.reshape((x.size,1,1))
         db.Put('{:08}'.format(i), caffe.io.array_to_datum(x, int(Y[i])).SerializeToString())
     del db
+
+"""
+LMDB replicates of above functions
+"""
+def lmdb_read_db(str_db, float_data=True):
+
+
+def lmdb_write_db(X, Y, fname):
+    if os.path.exists(fname):
+        shutil.rmtree(fname)
+    assert X.shape[0] == Y.shape[0]
+    X = X.reshape((X.shape[0], X.size/X.shape[0], 1, 1))
+
+    map_size = np.array(X).nbytes * 1000
+    env = lmdb.open(fname, map_size=map_size)
+    with env.being(write=True) as txn:
+        for i in xrange(X.shape[0]):
+            x = np.array(X[i])
+            if x.ndim != 3:
+                x = x.reshape((x.size, 1, 1))
+            datum = caffe.proto.caffe_pb2.Datum()
+            datum.channels = x.shape[0]
+            datum.height = x.shape[1]
+            datum.weight = x.shape[2]
+            datum.data = np.array(x).tobytes()
+            str_id = "{:08}".format(i)
+            txn.put(str_id, datum.SerializeToString())
+    return
 
 def update_db(seek, N, X, Y, fname):
     assert X.shape[0] == Y.shape[0]
@@ -236,7 +265,7 @@ def extract_feature(net, model, blobs, N, train = False, device = None):
     return res, net
 
 def write_net(db, dim, n_class, seek):
-    layers = [ ('data_seek', ('data','dummy',db+'_total', db+'_total', 1.0, seek)),
+    layers = [ ('data_seek', ('data','dummy',db+'_train', db+'_train', 1.0, seek)),
              ('data_seek', ('label', 'dummy', 'train_weight', 'train_weight', 1.0, seek)),
 
              ('inner', ('inner1', 'data', 500)),
@@ -245,14 +274,17 @@ def write_net(db, dim, n_class, seek):
              ('inner', ('inner2', 'inner1', 500)),
              ('relu', ('inner2',)),
 
-             ('inner', ('inner3', 'inner2', 2000)),
+             ('inner', ('inner3', 'inner2', 1000)),
              ('relu', ('inner3',)),
 
-             ('inner', ('output', 'inner3', dim)),
+             ('inner', ('inner4', 'inner3', 2000)),
+             ('relu', ('inner4',)),
+
+             ('inner', ('output', 'inner4', dim)),
 
              ('tloss', ('loss', 'output', 'label', n_class))
           ]
-    with open('net.prototxt', 'w') as fnet:
+    with open('cifar10_net.prototxt', 'w') as fnet:
         make_net(fnet, layers)
 
 
@@ -264,7 +296,7 @@ def make_net(fnet, layers):
         top: "{0}"
         data_param {{
             source: "{2}"
-            backend: LEVELDB
+            backend: LMDB
             batch_size: 256
         }}
         transform_param {{
@@ -278,7 +310,7 @@ def make_net(fnet, layers):
         top: "{0}"
         data_param {{
             source: "{3}"
-            backend: LEVELDB
+            backend: LMDB
             batch_size: 100
         }}
         transform_param {{
@@ -465,5 +497,5 @@ def make_net(fnet, layers):
 
 if __name__ == "__main__":
     lam = 160
-    db = "mnist"
+    db = "cifar10"
     DisKmeans(db, lam)

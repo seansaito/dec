@@ -76,6 +76,9 @@ def DisKmeans(db, update_interval = None):
         batch_size = 100
         train_batch_size = 256
         X, Y = read_db(db+'_total', True)
+        print "==========="
+        print Y
+        print "==========="
         X = np.asarray(X, dtype=np.float64)
         Y = np.asarray(np.squeeze(Y), dtype = np.int32)
         N = X.shape[0]
