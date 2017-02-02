@@ -72,7 +72,7 @@ def DisKmeans(db, update_interval = None):
     import cPickle
     from scipy.io import loadmat
 
-    if db == 'mnist':
+    if db == 'cifar10':
         N_class = 10
         batch_size = 100
         train_batch_size = 256
@@ -199,7 +199,7 @@ def write_db(X, Y, fname):
 """
 LMDB replicates of above functions
 """
-def lmdb_read_db(str_db, float_data=True):
+# def lmdb_read_db(str_db, float_data=True):
 
 
 def lmdb_write_db(X, Y, fname):
