@@ -65,6 +65,7 @@ display: 1000
 test_iter: 100
 test_interval: 10000
 max_iter: {2}
+momentum: 0.9
 weight_decay: {3}
 snapshot: 10000
 snapshot_prefix: "exp/{4}/save"
@@ -129,6 +130,7 @@ def pretrain_main(db, params):
                 test_iter: 100
                 test_interval: 10000
                 max_iter: {2}
+                momentum: 0.9
                 weight_decay: {3}
                 snapshot: 10000
                 snapshot_prefix: "exp/{4}/save"
