@@ -161,7 +161,7 @@ layers {{
     data_param {{
         seek: {5}
         source: "{2}"
-        backend: LEVELDB
+        backend: LMDB
         batch_size: 256
     }}
     transform_param {{
@@ -176,7 +176,7 @@ layers {{
     data_param {{
         seek: {5}
         source: "{3}"
-        backend: LEVELDB
+        backend: LMDB
         batch_size: 100
     }}
     transform_param {{
