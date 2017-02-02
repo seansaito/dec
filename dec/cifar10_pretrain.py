@@ -140,7 +140,7 @@ def pretrain_main(db, params):
                 device_id: 0""".format(rate, params['step'][0], params['pt_iter'][0], params['decay'][0], db))
 
         if i > 0:
-            model = 'exp/'+db+'/cifar_save_iter_%d.caffemodel'%params['pt_iter'][0]
+            model = 'exp/'+db+'/save_iter_%d.caffemodel'%params['pt_iter'][0]
         else:
             model = None
 
