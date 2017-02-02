@@ -174,7 +174,7 @@ if __name__ == '__main__':
     input_dim = 3072
     #dec.make_mnist_data()
     print main(db, {'n_layer':[5], 'dim': [input_dim, 500, 500, 1000, 2000, 10],
-               'drop': [0.0], 'rate': [0.1], 'step': [20000], 'iter':[100000], 'decay': [0.0000]})
+               'drop': [0.0], 'rate': [0.01], 'step': [20000], 'iter':[100000], 'decay': [0.0000]})
     print pretrain_main(db, {'dim': [input_dim, 500, 500, 1000, 2000, 10], 'pt_iter': [50000],
-              'drop': [0.2], 'rate': [0.1], 'step': [20000], 'iter':[100000], 'decay': [0.0000]})
+              'drop': [0.2], 'rate': [0.01], 'step': [20000], 'iter':[100000], 'decay': [0.0000]})
     os.system("caffe train --solver=cifar_ft_solver.prototxt --weights=cifar_stack_init_final.caffemodel")
