@@ -411,16 +411,14 @@ def make_20newsgroups_data():
 
     data_train = fetch_20newsgroups(subset='train', shuffle=True, random_state=42,
                                     remove=remove, categories=categories)
-    data_test = fetch_20newsgroups(subset='test', shuffle=True, random_state=42,
-                                   remove=remove, categories=categories)
 
     from sklearn.feature_extraction.text import TfidfVectorizer
     vectorizer = TfidfVectorizer()
-    X_train = vectorizer.fit_transform(data_train.data).toarray()
-    X_test = vectorizer.fit_transform(data_test.data).toarray()
+    X = vectorizer.fit_transform(data_train.data).toarray()
+    y = np.array(data_train.target)
 
-    y_train = np.array(data_train.target)
-    y_test = np.array(data_test.target)
+    from sklearn.cross_validation import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
     write_db(X_train, y_train, '20newsgroups_train')
 
