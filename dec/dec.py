@@ -416,11 +416,11 @@ def make_20newsgroups_data():
 
     from sklearn.feature_extraction.text import TfidfVectorizer
     vectorizer = TfidfVectorizer()
-    X_train = vectorizer.fit_transform(data_train.data)
-    X_test = vectorizer.fit_transform(data_test.data)
+    X_train = vectorizer.fit_transform(data_train.data).toarray()
+    X_test = vectorizer.fit_transform(data_test.data).toarray()
 
-    y_train = np.array(data_train.target)
-    y_test = np.array(data_test.target)
+    y_train = np.array(data_train.target).toarray()
+    y_test = np.array(data_test.target).toarray()
 
     write_db(X_train, y_train, '20newsgroups_train')
 
