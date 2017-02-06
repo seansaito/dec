@@ -424,10 +424,6 @@ def make_20newsgroups_data():
 
     write_db(X_train, y_train, '20newsgroups_train')
 
-    # X_, Y_ = read_db('cifar10_train', True)
-    # assert np.abs((X_train - X_)).mean() < 1e-5
-    # assert (y_train != Y_).sum() == 0
-
     write_db(X_test, y_test, '20newsgroups_test')
 
     X3 = np.concatenate((X_train, X_test), axis=0)
