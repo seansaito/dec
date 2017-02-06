@@ -388,6 +388,53 @@ def make_mnist_data():
   Y3 = np.concatenate((Y,Y2), axis=0)
   write_db(X3,Y3, 'mnist_total')
 
+def make_20newsgroups_data():
+    from sklearn.datasets import fetch_20newsgroups
+
+    remove = ('headers', 'footers', 'quotes')
+    categories = [
+     'comp.os.ms-windows.misc',
+     'comp.sys.ibm.pc.hardware',
+     'comp.sys.mac.hardware',
+     'comp.windows.x',
+     'rec.autos',
+     'rec.motorcycles',
+     'rec.sport.baseball',
+     'rec.sport.hockey',
+     'sci.electronics',
+     'sci.med',
+     'sci.space',
+     'soc.religion.christian',
+     'talk.politics.guns',
+     'talk.politics.mideast']
+
+
+    data_train = fetch_20newsgroups(subset='train', shuffle=True, random_state=42,
+                                    remove=remove, categories=categories)
+    data_test = fetch_20newsgroups(subset='test', shuffle=True, random_state=42,
+                                   remove=remove, categories=categories)
+
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    vectorizer = TfidfVectorizer()
+    X_train = vectorizer.fit_transform(data_train.data)
+    X_test = vectorizer.fit_transform(data_test.data)
+
+    y_train = np.array(data_train.target)
+    y_test = np.array(data_test.target)
+
+    write_db(X_train, y_train, '20newsgroups_train')
+
+    # X_, Y_ = read_db('cifar10_train', True)
+    # assert np.abs((X_train - X_)).mean() < 1e-5
+    # assert (y_train != Y_).sum() == 0
+
+    write_db(X_test, y_test, '20newsgroups_test')
+
+    X3 = np.concatenate((X_train, X_test), axis=0)
+    Y3 = np.concatenate((y_train, y_test), axis=0)
+    write_db(X3,Y3, '20newsgroups_total')
+
+
 def make_cifar10_data():
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
