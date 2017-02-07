@@ -1,16 +1,16 @@
 net: "net.prototxt"
-                base_lr: 0.01
-                lr_policy: "step"
-                gamma: 0.1
-                stepsize: 100000
-                display: 10
-                max_iter: 160
-                momentum: 0.9
-                weight_decay: 0.0000
-                snapshot: 100
-                snapshot_prefix: "exp/test/save"
-                snapshot_after_train:true
-                solver_mode: GPU
-                debug_info: false
-                sample_print: false
-                device_id: 0
+base_lr: 0.01
+lr_policy: "step"
+gamma: 0.1
+stepsize: 100000
+display: 10
+max_iter: 20
+momentum: 0.9
+weight_decay: 0.0000
+snapshot: 100
+snapshot_prefix: "exp/test/save"
+snapshot_after_train:true
+solver_mode: GPU
+debug_info: false
+sample_print: false
+device_id: 0

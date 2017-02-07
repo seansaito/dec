@@ -296,7 +296,7 @@ layers {
 }
 layers {
   name: "pt_loss"
-  type: SIGMOIDCROSSENTROPYLOSS
+  type: EUCLIDEAN_LOSS
   bottom: "d_data"
   bottom: "data"
   top: "pt_loss"
