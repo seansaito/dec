@@ -496,6 +496,6 @@ def make_net(fnet, layers):
     fnet.close()
 
 if __name__ == "__main__":
-    lam = None
+    lam = 160
     db = "20newsgroups"
     DisKmeans(db, lam)
