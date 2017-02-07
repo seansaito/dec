@@ -171,7 +171,7 @@ def pretrain_main(db, params):
 
 if __name__ == '__main__':
     db = 'reutersidf'
-    input_dim = 88223
+    input_dim = 2000
     #dec.make_mnist_data()
     print main(db, {'n_layer':[5], 'dim': [input_dim, 500, 500, 1000, 2000, 10],
                'drop': [0.0], 'rate': [0.01], 'step': [20000], 'iter':[100000], 'decay': [0.0000]})
