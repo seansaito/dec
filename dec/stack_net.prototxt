@@ -37,7 +37,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 500 
+    num_output: 500
     weight_filler {
       type: "gaussian"
       std: 0.05
@@ -64,7 +64,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 500 
+    num_output: 500
     weight_filler {
       type: "gaussian"
       std: 0.05
@@ -91,7 +91,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 2000 
+    num_output: 2000
     weight_filler {
       type: "gaussian"
       std: 0.05
@@ -127,7 +127,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 10 
+    num_output: 10
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -148,7 +148,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 2000 
+    num_output: 2000
     weight_filler {
       type: "gaussian"
       std: 0.01
