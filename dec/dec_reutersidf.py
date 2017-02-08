@@ -73,7 +73,7 @@ def DisKmeans(db, update_interval = None):
     from scipy.io import loadmat
 
     if db == 'reutersidf':
-        N_class = 14
+        N_class = 4
         batch_size = 100
         train_batch_size = 256
         X, Y = read_db(db+'_total', True)
@@ -89,7 +89,7 @@ def DisKmeans(db, update_interval = None):
     Y_pred = np.zeros((Y.shape[0]))
     iters = 0
     seek = 0
-    dim = 10
+    dim = 4
 
     acc_list = []
 
