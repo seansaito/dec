@@ -20,3 +20,4 @@ dec/cifar*
 dec/reuters*
 reuters/*
 cifar10/*
+dec/exp/reutersidf/*
